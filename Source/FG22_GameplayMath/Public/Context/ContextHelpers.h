@@ -137,10 +137,17 @@ public:
 		return TEST_BITS(BitMask, Bits);
 	}
 
-	// Used for checking a single flag
+	// Used for checking a single local flag 
 	UFUNCTION(BlueprintCallable, Category = "Context")
-	static bool FlagPredicate(const int32 BitMask, const int32 Bits)
+	static bool FlagPredicateLocal(const int32 BitMask, const ELocalContext Bit)
 	{
-		return TEST_BIT(BitMask, Bits);
+		return TEST_BIT(BitMask, Bit);
+	}
+	
+	// Used for checking a single relative flag
+	UFUNCTION(BlueprintCallable, Category = "Context")
+	static bool FlagPredicateRelative(const int32 BitMask, const ERelativeContext Bit)
+	{
+		return TEST_BIT(BitMask, Bit);
 	}
 };
