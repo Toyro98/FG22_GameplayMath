@@ -11,20 +11,19 @@ void AStateDemonstrator::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	float NewRotationInYaw = 0.0f;
 	LocalContext = UContextHelpers::GetLocalContext(this);
 
 	if (UContextHelpers::FlagPredicateLocal(LocalContext, ELocalContext::Hurt))
 	{
-		StaticMeshComponent->AddRelativeRotation(
-			FQuat::MakeFromRotator(FRotator(0, (360 / RotationsPerSecond) * DeltaTime, 0))
-		);
+		NewRotationInYaw = (360.0f / RotationsPerSecond) * DeltaTime;
 	}
 	else if (UContextHelpers::FlagPredicateLocal(LocalContext, ELocalContext::NearDeath))
 	{
-		StaticMeshComponent->AddRelativeRotation(
-			FQuat::MakeFromRotator(FRotator(0, (360 / RotationsPerSecond * 2) * DeltaTime, 0))
-		);
+		NewRotationInYaw = (360.0f / RotationsPerSecond * 4.0f) * DeltaTime;
 	}
+	
+	StaticMeshComponent->AddRelativeRotation(FRotator(0.0f, NewRotationInYaw, 0.0f));
 
 	if (Demonstrator != nullptr)
 	{
@@ -41,7 +40,7 @@ void AStateDemonstrator::Tick(float DeltaTime)
 
 		const float CurrentScale = StaticMeshComponent->GetComponentScale().X;
 		const float ScaleTo = UContextHelpers::ContextPredicate(BitMask, RelativeContext) ? MaxScale : MinScale;
-		SetActorScale3D(FVector(FMath::FInterpConstantTo(CurrentScale, ScaleTo, DeltaTime, InterpolationSpeed)));
+		SetActorScale3D(FVector(FMath::FInterpConstantTo(CurrentScale, ScaleTo, DeltaTime, InterpolationScaleSpeed)));
 	}
 
 	if (DrawCone)
@@ -55,16 +54,6 @@ void AStateDemonstrator::Tick(float DeltaTime)
 			0.0f, 
 			1, 
 			FColor::Green
-		);
-	}
-
-	if (DrawConnectingLine && Demonstrator != nullptr)
-	{
-		DrawDebugLine(
-			GetWorld(), 
-			StaticMeshComponent->GetComponentLocation(),
-			Demonstrator->GetActorLocation(), 
-			FColor::Blue
 		);
 	}
 }
