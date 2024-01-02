@@ -3,11 +3,6 @@
 AMyLightActor::AMyLightActor()
 {
 	PrimaryActorTick.bCanEverTick = true;
-}
-
-void AMyLightActor::BeginPlay()
-{
-	Super::BeginPlay();
 
 	Colors.Add(FLinearColor(1.0f, 0.0f, 0.0f));
 	Colors.Add(FLinearColor(1.0f, 0.5f, 0.0f));
@@ -23,6 +18,11 @@ void AMyLightActor::BeginPlay()
 	Colors.Add(FLinearColor(1.0f, 0.0f, 0.5f));
 }
 
+void AMyLightActor::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
 void AMyLightActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -35,10 +35,8 @@ void AMyLightActor::Tick(float DeltaTime)
 	Time += DeltaTime / Duration;
 	Time = FMath::Clamp(Time, 0.0f, 1.0f);
 
-	FLinearColor StartColor = Colors[PreviousIndex];
-	FLinearColor EndColor = Colors[Index];
-
-	LightActor->SetLightColor(FMath::Lerp(StartColor, EndColor, Time));
+	FLinearColor CurrentColor = FMath::Lerp(Colors[PreviousIndex], Colors[Index], Time);
+	LightActor->SetLightColor(CurrentColor);
 
 	if (Time >= 1.0f)
 	{
