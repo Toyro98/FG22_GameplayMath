@@ -18,11 +18,17 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
-	void CheckDirectionTo(const AMyActor* Actor) const;
+	void CheckDirectionTo(const AMyActor* Target) const;
+	bool IsCollidingWith(const AMyActor* Target) const;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	UStaticMeshComponent* StaticMeshComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	AMyActor* TargetToCheck;
+
+private:
+	FVector AABBMin;
+	FVector AABBMax;
+	FVector AABBHalfExtents;
 };

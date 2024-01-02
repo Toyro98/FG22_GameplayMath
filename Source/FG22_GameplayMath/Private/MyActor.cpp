@@ -12,6 +12,10 @@ void AMyActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	const auto Bounds = StaticMeshComponent->CalcBounds(GetTransform());
+	AABBHalfExtents = Bounds.BoxExtent;
+	AABBMin = Bounds.Origin - AABBHalfExtents;
+	AABBMax = Bounds.Origin + AABBHalfExtents;
 }
 
 void AMyActor::Tick(float DeltaTime)
@@ -28,6 +32,15 @@ void AMyActor::Tick(float DeltaTime)
 	if (TargetToCheck && TargetToCheck != this)
 	{
 		CheckDirectionTo(TargetToCheck);
+
+		if (IsCollidingWith(TargetToCheck))
+		{
+			auto DebugText = FString::Printf(TEXT("%s is colliding with %s"), *GetActorNameOrLabel(), *TargetToCheck->GetActorNameOrLabel());
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Emerald, DebugText);
+			}
+		}
 	}
 }
 
@@ -71,3 +84,14 @@ void AMyActor::CheckDirectionTo(const AMyActor* Target) const
 	}
 }
 
+bool AMyActor::IsCollidingWith(const AMyActor* Target) const
+{
+	FVector TargetActorAABBMin = Target->GetActorLocation() - Target->AABBHalfExtents;
+	FVector TargetActorAABBMax = Target->GetActorLocation() + Target->AABBHalfExtents;
+
+	const bool bOverlapX = AABBMin.X > TargetActorAABBMax.X || AABBMax.X < TargetActorAABBMin.X;
+	const bool bOverlapY = AABBMin.Y > TargetActorAABBMax.Y || AABBMax.Y < TargetActorAABBMin.Y;
+	const bool bOverlapZ = AABBMin.Z > TargetActorAABBMax.Z || AABBMax.Z < TargetActorAABBMin.Z;
+
+	return !(bOverlapX || bOverlapY || bOverlapZ);
+}
